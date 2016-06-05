@@ -1,31 +1,53 @@
 ## Synopsis
 
-PluginLoader adds support for server-side plugins to [**Interstellar Rift**](http://interstellarrift.com/) from **Split Polygon**. Please note that it uses MSIL injection to edit original Interstellar Rift binary code so it can break your game executables.
+PluginLoader adds support for server-side plugins to [**Interstellar Rift**](http://interstellarrift.com/) from **Split Polygon**. Exposes `Game.Server.ControllerManager` and server tick event.
+
+*Please note that PL uses MSIL injection to edit original Interstellar Rift binary code. It can break your game executables.*
 
 ## Motivation
 
-Interstellar Rift is a great game. It feels like Space Engineers, Pulsar and Star Citizen had a child(at least to me). When I noticed that devs are really open-minded about modifying game, I've decided to write PluginLoader to support community.
+Interstellar Rift is a great game! It feels like Space Engineers, Pulsar and Star Citizen had a child(at least to me). When I noticed that devs are really open-minded about modifying game, I've decided to write PluginLoader to support community.
 
-Thank you **Split Polygon** for your attitude!
+Thank you **Split Polygon** for your attitude! :) (and for not obfuscating)
+
+## Game Version
+
+Tested for Interstellar Rift version **0.1.23c1**  
+When a new game version is published, try to repatch binaries. There is some chance it will work just normally. Otherwise you will have to wait for PluginLoader update.
 
 ## Installation
 
-Release directory tree:
-* plugins/ExamplePlugin.dll
-* PluginLoader.dll
-* pluginloaderpatch.exe
+Release tree:
+```
+   plugins/
+        ExamplePlugin.dll
+   PluginLoader.dll
+   pluginloaderpatch.exe
+   README.txt
+```
 
-ad 1)\
-Move **whole plugins folder** into %AppData%/InterstellarRift/\
-All plugin dlls are going in there!
-
-ad 2)\
-**PluginLoader.dll** and **pluginloaderpatch.exe** goes to your game directory(next to IR.exe)\
-Now you have to start **pluginloaderpatch.exe**. It will output your new game executable. You can call it just like the original one(patched_ir -server).
+1. Locate *%AppData%/InterstellarRift/* dir and copy whole *plugins* folder here.
+2. Locate Interstellar Rift installation dir and copy *PluginLoader.dll* and *pluginloaderpatch.exe* there. Stay in dir for next step.
+3. CMD > `pluginloaderpatch IR.exe newIR.exe`
+4. Start server with the new executable > `newIR -server`
+5. You should see something like this:  
+![Dedicated Server Console](http://i.imgur.com/bEg5aEc.png)
+6. If you now join to the server, you will see:  
+![Game Chat](http://i.imgur.com/OlwH2ux.png)
 
 ## API Reference
 
-Just check the code, it isn't anything special. For actual plugin writing you should inspect game assembly(JustDecompile). 
+Just check the code, it isn't anything special. For actual plugin writing you should inspect game assembly(JustDecompile).
+
+## TODO
+
+- Better version controlling
+- Decide whether TickEvent is usefull or not
+
+## Donate
+
+Donations are greatly appreciated! I am just a poor medical student and probably will have to sell a kidney or two.  
+[Donate via PayPal](http://bit.ly/1t9MBsj)
 
 ## License
 
