@@ -25,50 +25,38 @@ using System;
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
-using System.IO;
-using System.Linq;
 
 namespace Patcher
 {
-    class Program
+    public static class Logger
     {
-        static void Main(string[] args)
+        public static event Action<string> OnError;
+        public static event Action<string> OnInfo;
+        public static event Action<string> OnSuccess;
+
+        public static void Info(string text = "")
         {
-            if (args.Length == 0)
-                Console.WriteLine("Usage: Patcher.exe [<path>]\n");
-
-            var path = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
-            var notFound = false;
-            PatchRunner.RequiredFiles.Where(file => !File.Exists(Path.Combine(path, file))).ToList().ForEach(file =>
-            {
-                Console.WriteLine($"File {Path.Combine(path, file)} could not be found.");
-                notFound = true;
-            });
-            if (notFound)
-            {
-                Console.ReadLine();
-                return;
-            }
-
-            Logger.OnInfo += (string text) => Console.Write(text);
-
-            Logger.OnError += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write(text);
-                Console.ResetColor();
-            };
-
-            Logger.OnSuccess += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write(text);
-                Console.ResetColor();
-            };
-
-            var patcher = new PatchRunner(path);
-            patcher.LoadData();
-            patcher.Patch();
+            OnInfo?.Invoke(text);
+        }
+        public static void InfoLine(string text = "")
+        {
+            Info(text + Environment.NewLine);
+        }
+        public static void Error(string text = "")
+        {
+            OnError?.Invoke(text);
+        }
+        public static void ErrorLine(string text = "")
+        {
+            Error(text + Environment.NewLine);
+        }
+        public static void Success(string text = "")
+        {
+            OnSuccess?.Invoke(text);
+        }
+        public static void SuccessLine(string text = "")
+        {
+            Success(text + Environment.NewLine);
         }
     }
 }

@@ -25,50 +25,26 @@ using System;
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace Patcher
+namespace PatcherGUI
 {
-    class Program
+    public class OldWindow : IWin32Window
     {
-        static void Main(string[] args)
+        readonly IntPtr _handle;
+
+        public OldWindow(IntPtr handle)
         {
-            if (args.Length == 0)
-                Console.WriteLine("Usage: Patcher.exe [<path>]\n");
+            _handle = handle;
+        }
 
-            var path = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
-            var notFound = false;
-            PatchRunner.RequiredFiles.Where(file => !File.Exists(Path.Combine(path, file))).ToList().ForEach(file =>
-            {
-                Console.WriteLine($"File {Path.Combine(path, file)} could not be found.");
-                notFound = true;
-            });
-            if (notFound)
-            {
-                Console.ReadLine();
-                return;
-            }
-
-            Logger.OnInfo += (string text) => Console.Write(text);
-
-            Logger.OnError += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write(text);
-                Console.ResetColor();
-            };
-
-            Logger.OnSuccess += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write(text);
-                Console.ResetColor();
-            };
-
-            var patcher = new PatchRunner(path);
-            patcher.LoadData();
-            patcher.Patch();
+        IntPtr IWin32Window.Handle
+        {
+            get { return _handle; }
         }
     }
 }

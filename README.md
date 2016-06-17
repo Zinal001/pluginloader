@@ -1,6 +1,6 @@
 ## Synopsis
 
-PluginLoader adds support for server-side plugins to [**Interstellar Rift**](http://interstellarrift.com/) from **Split Polygon**. Exposes `Game.Server.ControllerManager` and server tick event.
+PluginLoader adds support for IronPython plugins to [**Interstellar Rift**](http://interstellarrift.com/) from **Split Polygon**.
 
 *Please note that PL uses MSIL injection to edit original Interstellar Rift binary code. It can break your game executables.*
 
@@ -12,63 +12,69 @@ Thank you **Split Polygon** for your attitude! :) (and for not obfuscating)
 
 ## Game Version
 
-Tested for Interstellar Rift version **0.1.23c1**  
-When a new game version is published, try to repatch binaries. There is some chance it will work just normally. Otherwise you will have to wait for PluginLoader update.
+When a new game version is published, try to repatch binaries. There is a chance it will work as it should. If not, I'll do my best to release new version ASAP.
+
+## Modding
+
+Only server-side hooks work for now. Client-side is under development and will be in one of next releases. We want to be sure it is working properly without too much fiddling with files(on client).
+
+If you are interested in modding and would like to help us test/develop some mods for client-side, contact me via [bosektom@gmail.com](mailto:bosektom@gmail.com)
 
 ## Installation
 
-Release tree:
+Release usually contains:
 ```
-   plugins/
-        ExamplePlugin.dll
-   PluginLoader.dll
-   pluginloaderpatch.exe
-   README.txt
+	Patcher.exe
+	PatcherGUI.exe
 ```
+For console interface run **Patcher.exe**  
+For graphical interface run **PatcherGUI.exe**  
 
-1. Locate *%AppData%/InterstellarRift/* dir and copy whole *plugins* folder here.
-2. Locate Interstellar Rift installation dir and copy *PluginLoader.dll* and *pluginloaderpatch.exe* there. Stay in dir for next step.
-3. CMD > `pluginloaderpatch IR.exe newIR.exe`
-4. Start server with the new executable > `newIR -server`
-5. You should see something like this:  
-![Dedicated Server Console](http://i.imgur.com/bEg5aEc.png)
-6. If you now join to the server, you will see:  
-![Game Chat](http://i.imgur.com/OlwH2ux.png)
+1. When asked, provide path to game executables(usually `Steam/steamapps/common/Interstellar Rift/Build/`)
+2. Start server with the new executable > `IR -server`
+3. You should see something like this:  
+![Dedicated Server Console](http://i.imgur.com/pbJ2npr.png)
+
+## Adding plugins
+
+1. Locate Interstellar Rift user-related data directory. It should be something like `%appdata%/InterstellarRift/`  
+2. Check if **plugins** directory exists. If not, create it.
+3. Copy folder with plugin into **plugins** directory.
+4. You should see something like this(sorry for weird language):  
+![Plugins directory](http://i.imgur.com/0YDImc4.png)
+5. Content:  
+![ConsoleExtension directory](http://i.imgur.com/500oLcE.png)
+
+Name of plugin folder(*ConsoleExtension* in this case) is not important. You can name it as you wish.
+
+Please note that if plugin folder does not contain valid `__init__.py` and `plugin.json`, it will not be loaded!
+
 
 ## API Reference
 
-Just check the code, it isn't anything special. For actual plugin writing you should inspect game assembly(JustDecompile).
-
-## TODO
-
-- Better version controlling
-- Decide whether TickEvent is usefull or not
+We are currently working on some basic API docs for Python. For more game API info use ILspy or JustDecompile. We are still trying to find out, what can we achieve.
 
 ## Donate
 
-Donations are greatly appreciated! I am just a poor medical student and probably will have to sell a kidney or two.  
-[Donate via PayPal](http://bit.ly/1t9MBsj)
+Donations are greatly appreciated!  
+[Donate via PayPal](http://bit.ly/1rtm7Ac)
 
 ## License
 
-The MIT License (MIT)
+AGPLv3
 
 Copyright (c) 2016 Tomas Bosek
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+PluginLoader is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+

@@ -20,55 +20,53 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 #endregion
+using Game.Networking;
+#pragma warning restore CC0065 // Remove trailing whitespace
+#pragma warning restore CC0065 // Remove trailing whitespace
+#pragma warning restore CC0065 // Remove trailing whitespace
+#pragma warning restore CC0065 // Remove trailing whitespace
 using System;
-#pragma warning restore CC0065 // Remove trailing whitespace
-#pragma warning restore CC0065 // Remove trailing whitespace
-#pragma warning restore CC0065 // Remove trailing whitespace
-#pragma warning restore CC0065 // Remove trailing whitespace
 using System.IO;
-using System.Linq;
 
-namespace Patcher
+namespace PluginLoader
 {
-    class Program
+    abstract class GameMode
     {
-        static void Main(string[] args)
+        protected readonly PluginManager pluginManager;
+        protected GameMode(PluginManager pluginManager)
         {
-            if (args.Length == 0)
-                Console.WriteLine("Usage: Patcher.exe [<path>]\n");
+            this.pluginManager = pluginManager;
+        }
 
-            var path = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
-            var notFound = false;
-            PatchRunner.RequiredFiles.Where(file => !File.Exists(Path.Combine(path, file))).ToList().ForEach(file =>
-            {
-                Console.WriteLine($"File {Path.Combine(path, file)} could not be found.");
-                notFound = true;
-            });
-            if (notFound)
-            {
-                Console.ReadLine();
-                return;
-            }
+        private void Initialize()
+        {
+            Console.WriteLine();
+            Console.WriteLine($"[{nameof(PluginLoader)}] Starting {this.GetType().Name} mode");
+            Console.WriteLine();
+        }
 
-            Logger.OnInfo += (string text) => Console.Write(text);
+        public virtual void StartGameMode()
+        {
+            Initialize();
+        }
 
-            Logger.OnError += (string text) =>
+        public static string AddFileToFS(NetFilesystem filesystem, string path, string filename, byte[] data)
+        {
+            var key = $"{path}{filename}";
+
+            filesystem.FileSystem.WriteFile(path, filename, data);
+            var netSource = new NetFilestreamSource
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write(text);
-                Console.ResetColor();
+                Path = path,
+                Filename = filename,
             };
+            filesystem.IdentifierSources.Add(key, netSource);
+            return key;
+        }
 
-            Logger.OnSuccess += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write(text);
-                Console.ResetColor();
-            };
-
-            var patcher = new PatchRunner(path);
-            patcher.LoadData();
-            patcher.Patch();
+        public static Stream LoadFileFromFS(NetFilesystem filesystem, string path, string filename)
+        {
+            return filesystem.FileSystem.ReadFile(path, filename);
         }
     }
 }

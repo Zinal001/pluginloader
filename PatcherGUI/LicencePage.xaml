@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="PatcherGUI.LicencePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PatcherGUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="800" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White">
+    <Grid>
+        <TextBlock x:Name="titleBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Licence" VerticalAlignment="Top" Padding="10" FontSize="30" FontWeight="Bold"/>
+        <RichTextBox x:Name="richTextBox" HorizontalAlignment="Stretch" Height="418" VerticalAlignment="Bottom" Padding="10" Margin="10" Focusable="False" IsReadOnly="True" Cursor="Arrow" BorderThickness="0" IsDocumentEnabled="True">
+            <FlowDocument TextAlignment="Justify" FontSize="16">
+            </FlowDocument>
+            <RichTextBox.Style>
+                <Style TargetType="{x:Type RichTextBox}">
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </RichTextBox.Style>
+        </RichTextBox>
+    </Grid>
+</UserControl>

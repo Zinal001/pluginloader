@@ -1,0 +1,3 @@
+﻿Add some kind of progress tracking class instead of a lot of singletons.
+Polish xaml sources
+Add update downloader

@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="PatcherGUI.DescriptionPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PatcherGUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="800" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White">
+    <Grid>
+        <TextBlock x:Name="titleBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="PluginLoader" VerticalAlignment="Top" Padding="10" FontSize="30" FontWeight="Bold"/>
+        <RichTextBox x:Name="richTextBox" HorizontalAlignment="Stretch" Height="418" VerticalAlignment="Bottom" Padding="10" Margin="10" Focusable="False" IsReadOnly="True" Cursor="Arrow" BorderThickness="0" IsDocumentEnabled="True">
+            <FlowDocument TextAlignment="Justify" FontSize="16">
+                <Paragraph>
+                    <Span FontWeight="Bold" FontSize="20">What is this?</Span>
+                    <LineBreak/>
+                    PluginLoader is open source tool which brings IronPython-based plugin support to Interstellar Rift.
+                </Paragraph>
+                <Paragraph>
+                    <Span FontWeight="Bold" FontSize="20">How does it work?</Span>
+                    <LineBreak/>
+                    We use this tool to perform CIL Bytecode injection to edit game binaries (approved by Split Polygon, developer of Interstellar Rift) and insert our code into the game. While patching, this may lead to Windows requesting Administrator elevation. Running this application under Administrator account is
+                    <Bold>highly</Bold> recommended.
+                </Paragraph>
+                <Paragraph>
+                    <Span FontWeight="Bold" FontSize="20">So is this an installer?</Span>
+                    <LineBreak/>
+                    This tool does not write any information into registry. It simply extracts and rewrites some files in Interstellar Rift game directory. You can remove patched files easily with "Verify integrity of game cache" in Steam.
+                </Paragraph>
+                <Paragraph>
+                    <Span FontWeight="Bold" FontSize="20">Usefull links</Span>
+                    <LineBreak/>
+                    <Hyperlink NavigateUri="http://bit.ly/1ZOws5F" RequestNavigate="Hyperlink_RequestNavigate">
+                        Official forums topic
+                    </Hyperlink>
+                    <LineBreak/>
+                    <Hyperlink NavigateUri="http://bit.ly/21kmzgI" RequestNavigate="Hyperlink_RequestNavigate">
+                        GitHub repository
+                    </Hyperlink>
+                </Paragraph>
+            </FlowDocument>
+            <RichTextBox.Style>
+                <Style TargetType="{x:Type RichTextBox}">
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </RichTextBox.Style>
+        </RichTextBox>
+    </Grid>
+</UserControl>

@@ -20,55 +20,35 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 #endregion
-using System;
+using Mono.Cecil.Cil;
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace Patcher
+namespace Patcher.Patches
 {
-    class Program
+    internal class GameMenuPatch : Patch
     {
-        static void Main(string[] args)
+        public GameMenuPatch(PatcherData patcherData) : base(patcherData)
         {
-            if (args.Length == 0)
-                Console.WriteLine("Usage: Patcher.exe [<path>]\n");
+            var irData = patcherData.TargetData[PatcherTarget.InterstellarRift];
+            var plData = patcherData.TargetData[PatcherTarget.PluginLoader];
+            var irProgramType = irData.Module.GetType("Game.Program");
+            var pluginInjectorType = plData.Module.GetType("PluginLoader.PluginInjector");
+            var irPluginInjectorField = Helpers.GetFieldByName(irProgramType.Fields.ToArray(), "PluginInjector");
+            var irGameClientType = irData.Module.GetType("Game.GameStates.GameMainMenu");
 
-            var path = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
-            var notFound = false;
-            PatchRunner.RequiredFiles.Where(file => !File.Exists(Path.Combine(path, file))).ToList().ForEach(file =>
+            var instructions = new List<Instruction>
             {
-                Console.WriteLine($"File {Path.Combine(path, file)} could not be found.");
-                notFound = true;
-            });
-            if (notFound)
-            {
-                Console.ReadLine();
-                return;
-            }
-
-            Logger.OnInfo += (string text) => Console.Write(text);
-
-            Logger.OnError += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write(text);
-                Console.ResetColor();
+                Instruction.Create(OpCodes.Ldsfld, irPluginInjectorField),
+                Instruction.Create(OpCodes.Ldarg_0),
+                Instruction.Create(OpCodes.Callvirt, irData.Module.Import(Helpers.GetMethodByName(pluginInjectorType.Methods.ToArray(), "IRInitializeGameMenu")))
             };
-
-            Logger.OnSuccess += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write(text);
-                Console.ResetColor();
-            };
-
-            var patcher = new PatchRunner(path);
-            patcher.LoadData();
-            patcher.Patch();
+            var processor = Helpers.GetMethodByName(irGameClientType.Methods.ToArray(), ".ctor").Body.GetILProcessor();
+            Helpers.InjectInstructionsToEnd(processor, instructions.ToArray());
         }
     }
 }

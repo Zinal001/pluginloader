@@ -25,50 +25,42 @@ using System;
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace Patcher
+namespace PatcherGUI
 {
-    class Program
+    public partial class FinalPage : UserControl, IPage
     {
-        static void Main(string[] args)
+        private static FinalPage instance;
+        public static FinalPage Instance => instance;
+        public bool CanGoBack => false;
+        public bool CanGoNext => true;
+        public string NextButtonLabel => "Finish";
+        public FinalPage()
         {
-            if (args.Length == 0)
-                Console.WriteLine("Usage: Patcher.exe [<path>]\n");
+            InitializeComponent();
+            instance = this;
+        }
 
-            var path = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
-            var notFound = false;
-            PatchRunner.RequiredFiles.Where(file => !File.Exists(Path.Combine(path, file))).ToList().ForEach(file =>
-            {
-                Console.WriteLine($"File {Path.Combine(path, file)} could not be found.");
-                notFound = true;
-            });
-            if (notFound)
-            {
-                Console.ReadLine();
-                return;
-            }
+        public void PageShowed() { }
 
-            Logger.OnInfo += (string text) => Console.Write(text);
-
-            Logger.OnError += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write(text);
-                Console.ResetColor();
-            };
-
-            Logger.OnSuccess += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write(text);
-                Console.ResetColor();
-            };
-
-            var patcher = new PatchRunner(path);
-            patcher.LoadData();
-            patcher.Patch();
+        #pragma warning disable CC0091 // Use static method
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        #pragma warning restore CC0091 // Use static method
+        {
+            System.Diagnostics.Process.Start(e.Uri.ToString());
         }
     }
 }

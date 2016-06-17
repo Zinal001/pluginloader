@@ -25,50 +25,48 @@ using System;
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
 #pragma warning restore CC0065 // Remove trailing whitespace
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Reflection;
 
-namespace Patcher
+namespace PatcherGUI
 {
-    class Program
+    public partial class LicencePage : UserControl, IPage
     {
-        static void Main(string[] args)
+        public bool CanGoBack
         {
-            if (args.Length == 0)
-                Console.WriteLine("Usage: Patcher.exe [<path>]\n");
-
-            var path = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
-            var notFound = false;
-            PatchRunner.RequiredFiles.Where(file => !File.Exists(Path.Combine(path, file))).ToList().ForEach(file =>
-            {
-                Console.WriteLine($"File {Path.Combine(path, file)} could not be found.");
-                notFound = true;
-            });
-            if (notFound)
-            {
-                Console.ReadLine();
-                return;
-            }
-
-            Logger.OnInfo += (string text) => Console.Write(text);
-
-            Logger.OnError += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write(text);
-                Console.ResetColor();
-            };
-
-            Logger.OnSuccess += (string text) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write(text);
-                Console.ResetColor();
-            };
-
-            var patcher = new PatchRunner(path);
-            patcher.LoadData();
-            patcher.Patch();
+            get { return true; }
         }
+        public bool CanGoNext
+        {
+            get { return true; }
+        }
+        public string NextButtonLabel
+        {
+            get
+            {
+                return "Next";
+            }
+        }
+        public LicencePage()
+        {
+            InitializeComponent();
+
+            var licence = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{nameof(PatcherGUI)}.Content.agpl-3.0.rtf");
+            richTextBox.Selection.Load(licence, DataFormats.Rtf);
+        }
+
+        public void PageShowed() { }
     }
 }
