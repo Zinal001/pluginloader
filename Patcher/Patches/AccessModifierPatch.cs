@@ -1,0 +1,60 @@
+﻿#region Licence
+// Copyright (c) 2016 Tomas Bosek
+// 
+// This file is part of PluginLoader.
+// 
+// PluginLoader is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+#endregion
+using System.Linq;
+
+namespace Patcher.Patches
+{
+    internal class AccessModifierPatch : Patch
+    {
+        public AccessModifierPatch(PatcherData patcherData) : base(patcherData)
+        {
+            allTypesPublic();
+            allNotPublicMethodsProtected();
+            allPrivateFieldsProtected();
+        }
+
+        private void allNotPublicMethodsProtected()
+        {
+            patcherData.TargetData[PatcherTarget.InterstellarRift].Module.GetTypes().ToList().ForEach(type =>
+                type.Methods.ToList().ForEach(method => {
+                if ((method.IsPrivate || method.IsAssembly || method.IsFamilyAndAssembly))
+                    method.IsFamily = true;
+            }));
+        }
+
+        private void allPrivateFieldsProtected()
+        {
+            patcherData.TargetData[PatcherTarget.InterstellarRift].Module.GetTypes().ToList().ForEach(type =>
+                type.Fields.ToList().ForEach(field => {
+                if (field.IsPrivate)
+                    field.IsFamily = true;
+            }));
+        }
+
+        private void allTypesPublic()
+        {
+            patcherData.TargetData[PatcherTarget.InterstellarRift].Module.GetTypes().ToList().ForEach(type => {
+                if (!type.IsNested)
+                    type.IsPublic = true;
+                else
+                    type.IsNestedPublic = true;
+            });
+        }
+    }
+}

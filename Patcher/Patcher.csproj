@@ -4,32 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{44DFA0A1-8805-44EC-9026-187891D404E1}</ProjectGuid>
+    <ProjectGuid>{913CC3D4-A9C8-4FC6-878F-23B21900E699}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Patcher</RootNamespace>
-    <AssemblyName>pluginloaderpatch</AssemblyName>
+    <AssemblyName>Patcher</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -47,13 +32,18 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
-      <HintPath>.\Mono.Cecil.dll</HintPath>
+      <HintPath>Resources\Mono.Cecil.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -63,38 +53,42 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Patch.cs" />
+    <Compile Include="Patches\AccessModifierPatch.cs" />
+    <Compile Include="Patches\AgosGuiPatch.cs" />
+    <Compile Include="Patches\ChatControllerPatch.cs" />
+    <Compile Include="Patches\ClientDeviceFactoryPatch.cs" />
+    <Compile Include="Patches\DeviceFactoryPatch.cs" />
+    <Compile Include="Patches\GameClientPatch.cs" />
+    <Compile Include="Patches\GameEditorPatch.cs" />
+    <Compile Include="Patches\GameMenuPatch.cs" />
+    <Compile Include="Patches\GameServerPatch.cs" />
+    <Compile Include="Patches\ProgramPatch.cs" />
+    <Compile Include="PatchRunner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="Resources\Lib.zip" />
+    <None Include="Patcher.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PluginLoader\PluginLoader.csproj">
-      <Project>{2e9efff4-c58f-4a7b-abe6-390d98fc3144}</Project>
-      <Name>PluginLoader</Name>
-      <Private>True</Private>
-    </ProjectReference>
+    <EmbeddedResource Include="Resources\IronPython.dll" />
+    <EmbeddedResource Include="Resources\IronPython.Modules.dll" />
+    <EmbeddedResource Include="Resources\Microsoft.Dynamic.dll" />
+    <EmbeddedResource Include="Resources\Microsoft.Scripting.dll" />
+    <EmbeddedResource Include="Resources\PluginLoader.dll" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
+    <EmbeddedResource Include="Resources\Mono.Cecil.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Mono.Cecil.dll" />
+    <Content Include="Icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(SolutionDir)PluginLoader\$(OutDir)"</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

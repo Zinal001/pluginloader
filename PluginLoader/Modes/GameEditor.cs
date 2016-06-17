@@ -1,0 +1,36 @@
+﻿#region Licence
+// Copyright (c) 2016 Tomas Bosek
+// 
+// This file is part of PluginLoader.
+// 
+// PluginLoader is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+#endregion
+namespace PluginLoader
+{
+    class GameEditor : GameMode
+    {
+        private readonly Game.GameStates.GameShipEditor gameEditor;
+
+        public GameEditor(PluginManager pluginManager, Game.GameStates.GameShipEditor gameEditor) : base(pluginManager)
+        {
+            this.gameEditor = gameEditor;
+        }
+        public override void StartGameMode()
+        {
+            base.StartGameMode();
+
+            pluginManager.Start();
+        }
+    }
+}

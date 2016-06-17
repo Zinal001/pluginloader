@@ -1,0 +1,66 @@
+﻿#region Licence
+// Copyright (c) 2016 Tomas Bosek
+// 
+// This file is part of PluginLoader.
+// 
+// PluginLoader is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+#endregion
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace PluginLoader
+{
+    public class PackageManager
+    {
+        public string GameDir => AppDomain.CurrentDomain.BaseDirectory;
+        public string RootDir => Environment.ExpandEnvironmentVariables("%appdata%\\InterstellarRift\\plugins");
+
+        private List<Package> packages = new List<Package>();
+        public List<Package> Packages => packages;
+
+        internal void ScanForPackages()
+        {
+            var dirs = Directory.GetDirectories(RootDir).ToList();
+
+            foreach (string dir in dirs)
+            {
+                var definition = Path.Combine(dir, "plugin.json");
+                var init = Path.Combine(dir, "__init__.py");
+                if (File.Exists(definition) && File.Exists(init))
+                {
+                    try
+                    {
+                        packages.Add(new Package
+                        {
+                            Metadata = JsonSerializer.Deserialize<Metadata>(File.ReadAllText(definition)),
+                            Path = dir
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[{nameof(PackageManager)}] Error loading module {Path.GetDirectoryName(init)}");
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+        }
+
+        internal void Sort()
+        {
+            packages = DependencySolver.Sort(packages.ToArray()).ToList();
+        }
+    }
+}
