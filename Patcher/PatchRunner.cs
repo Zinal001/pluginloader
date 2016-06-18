@@ -93,7 +93,7 @@ namespace Patcher
         public string GetPLVersion()
         {
             var plVersionHelpersType = patcherData.TargetData[PatcherTarget.PluginLoader].Assembly.GetType("PluginLoader.Versions");
-            return (plVersionHelpersType.GetMethod("GetPluginLoaderVersion").Invoke(null, null)).ToString();
+            return plVersionHelpersType.GetProperty("PluginLoaderVersion").GetValue(null).ToString();
         }
 
         private void callPatches(PatcherData patcherData)
@@ -158,7 +158,7 @@ namespace Patcher
                 saveResource("Microsoft.Dynamic.dll", "Microsoft.Dynamic.dll");
                 saveResource("Microsoft.Scripting.dll", "Microsoft.Scripting.dll");
 
-                extractResource("Lib.zip", @"\");
+                extractResource("Lib.zip", Directory.GetCurrentDirectory());
             }
             catch (Exception ex)
             {
