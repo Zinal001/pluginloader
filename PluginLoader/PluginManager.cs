@@ -226,15 +226,13 @@ namespace PluginLoader
 
                 Console.WriteLine($"[{nameof(PluginManager)}] Executing packages");
                 var scope = engine.Runtime.CreateScope();
-
-                #pragma warning disable CC0021 // Use nameof
+                
                 scope.SetVariable("GameDir", PackageManager.GameDir);
                 scope.SetVariable("Globals", engine.Runtime.Globals.GetVariableNames());
                 scope.SetVariable("Packages", packages);
                 scope.SetVariable("PluginManager", this);
                 scope.SetVariable("RootDir", PackageManager.RootDir);
                 scope.SetVariable("Versions", typeof(Versions));
-                #pragma warning restore CC0021 // Use nameof
 
                 CSharpCodeProvider csProvider = new CSharpCodeProvider();
                 CompilerParameters csParams = new CompilerParameters();

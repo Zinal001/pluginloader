@@ -136,7 +136,7 @@ namespace Patcher
             //patches.Add(typeof(DeviceFactoryPatch));
             //patches.Add(typeof(GameClientPatch));
             //patches.Add(typeof(GameEditorPatch));
-            //patches.Add(typeof(GameMenuPatch));
+            patches.Add(typeof(GameMenuPatch));
             patches.Add(typeof(GameServerPatch));
 
             try

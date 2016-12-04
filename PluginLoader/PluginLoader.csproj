@@ -64,20 +64,20 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\IronPython.2.7.2\lib\Net40\IronPython.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>G:\Projects\C#\Zinal\IR\Plugin\packages\IronPython.2.7.2\lib\Net40\IronPython.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="IronPython.Modules, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\IronPython.2.7.2\lib\Net40\IronPython.Modules.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>G:\Projects\C#\Zinal\IR\Plugin\packages\IronPython.2.7.2\lib\Net40\IronPython.Modules.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\IronPython.2.7.2\lib\Net40\Microsoft.Dynamic.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>G:\Projects\C#\Zinal\IR\Plugin\packages\IronPython.2.7.2\lib\Net40\Microsoft.Dynamic.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\IronPython.2.7.2\lib\Net40\Microsoft.Scripting.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>G:\Projects\C#\Zinal\IR\Plugin\packages\IronPython.2.7.2\lib\Net40\Microsoft.Scripting.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="NetSerializer">
       <HintPath>IRAssemblies\NetSerializer.dll</HintPath>
