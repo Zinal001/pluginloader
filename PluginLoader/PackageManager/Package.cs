@@ -60,10 +60,11 @@ namespace PluginLoader
         public Version Version;
         public Version PluginLoader;
         public List<Dependency> Dependencies;
+        public PackageType PackageType;
 
         public override string ToString()
         {
-            return $"{UniqueName} v{Version}";
+            return $"{UniqueName} v{Version} ({PackageType.ToString()})";
         }
     }
     [Serializable]
@@ -76,5 +77,12 @@ namespace PluginLoader
         {
             return Metadata.ToString();
         }
+    }
+
+    [Serializable]
+    public enum PackageType : int
+    {
+        Python = 0,
+        CScript = 1
     }
 }

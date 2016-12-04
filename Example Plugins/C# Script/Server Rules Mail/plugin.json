@@ -1,0 +1,8 @@
+{
+	"UniqueName": "serverRulesMail",
+	"PrettyName": "Server Rules Mail",
+	"Version": "0.1.0",
+	"PluginLoader": "0.10.0",
+	"Dependencies": [],
+	"PackageType": "CScript"
+}

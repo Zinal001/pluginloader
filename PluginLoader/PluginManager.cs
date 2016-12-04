@@ -18,7 +18,10 @@
 #endregion
 using Game.Framework;
 using IronPython.Hosting;
+using Microsoft.CSharp;
 using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -222,25 +225,39 @@ namespace PluginLoader
                 engine.SetSearchPaths(searchPaths);
 
                 Console.WriteLine($"[{nameof(PluginManager)}] Executing packages");
-                var scope = engine.CreateScope();
+                var scope = engine.Runtime.CreateScope();
 
                 #pragma warning disable CC0021 // Use nameof
-                engine.Runtime.Globals.SetVariable("GameDir", PackageManager.GameDir);
-                engine.Runtime.Globals.SetVariable("Globals", engine.Runtime.Globals.GetVariableNames());
-                engine.Runtime.Globals.SetVariable("Packages", packages);
-                engine.Runtime.Globals.SetVariable("PluginManager", this);
-                engine.Runtime.Globals.SetVariable("RootDir", PackageManager.RootDir);
-                engine.Runtime.Globals.SetVariable("Versions", typeof(Versions));
+                scope.SetVariable("GameDir", PackageManager.GameDir);
+                scope.SetVariable("Globals", engine.Runtime.Globals.GetVariableNames());
+                scope.SetVariable("Packages", packages);
+                scope.SetVariable("PluginManager", this);
+                scope.SetVariable("RootDir", PackageManager.RootDir);
+                scope.SetVariable("Versions", typeof(Versions));
                 #pragma warning restore CC0021 // Use nameof
 
-                paths.ToList().ForEach((string module) => {
+                CSharpCodeProvider csProvider = new CSharpCodeProvider();
+                CompilerParameters csParams = new CompilerParameters();
+                csParams.GenerateInMemory = true;
+                csParams.GenerateExecutable = false;
+                csParams.ReferencedAssemblies.Add(Assembly.GetAssembly(typeof(Game.GameStates.GameShipEditor)).Location);
+                csParams.ReferencedAssemblies.Add(Assembly.GetAssembly(typeof(Game.Framework.IUpdatable)).Location);
+                csParams.ReferencedAssemblies.Add(Assembly.GetAssembly(typeof(PluginClass)).Location);
+                PluginGlobal csGlobal = new PluginGlobal(PackageManager.GameDir, packages, this, PackageManager.RootDir);
+                
+                PackageManager.Packages.ForEach((Package p) => {
                     try
                     {
-                        engine.Execute($"from {module} import *", scope);
+                        if (p.Metadata.PackageType == PackageType.Python)
+                            InitPythonPlugin(p, ref engine, ref scope);
+                        else if (p.Metadata.PackageType == PackageType.CScript)
+                            InitCScriptPlugin(p, ref csProvider, ref csParams, ref csGlobal);
+                        else
+                            throw new InvalidOperationException("Missing or invalid PackageType in plugin.json");
                     }
-                    catch (Exception ex)
+                    catch(Exception ex)
                     {
-                        Console.WriteLine($"[{nameof(PluginManager)}] Error while executing {module}");
+                        Console.WriteLine($"[{nameof(PluginManager)}] Error while executing {p.Path.Split('\\').Last()}");
                         Console.WriteLine(ex);
                     }
                 });
@@ -259,6 +276,44 @@ namespace PluginLoader
             {
                 Console.WriteLine($"[{nameof(PluginManager)}] Error while starting plugins");
                 Console.WriteLine(ex);
+            }
+        }
+
+        private void InitPythonPlugin(Package p, ref Microsoft.Scripting.Hosting.ScriptEngine engine, ref Microsoft.Scripting.Hosting.ScriptScope scope)
+        {
+            if (System.IO.File.Exists(p.Path + "\\__init__.py"))
+                engine.ExecuteFile(p.Path + "\\__init__.py", scope);
+            else
+                throw new InvalidOperationException("Unable to find file __init__.py");
+        }
+
+        private void InitCScriptPlugin(Package p, ref CSharpCodeProvider csProvider, ref CompilerParameters csParams, ref PluginGlobal csGlobal)
+        {
+            if (!System.IO.File.Exists(p.Path + "\\__init__.cs"))
+                throw new InvalidOperationException("Unable to find file __init__.cs");
+
+            CompilerResults results = csProvider.CompileAssemblyFromFile(csParams, p.Path + "\\__init__.cs");
+            if (results.Errors.HasErrors)
+            {
+                System.Text.StringBuilder sbErrors = new System.Text.StringBuilder();
+                foreach (CompilerError error in results.Errors)
+                    sbErrors.AppendLine(String.Format("Error ({0}): {1}", error.ErrorNumber, error.ErrorText));
+
+                throw new InvalidOperationException(sbErrors.ToString());
+            }
+            else
+            {
+                Type[] pluginTypes = results.CompiledAssembly.GetTypes().Where(t => t.IsSubclassOf(typeof(PluginClass))).ToArray();
+
+                if (pluginTypes.Length == 0)
+                    throw new InvalidOperationException(p.Path.Split('\\').Last() + " doesn't have an instance of PluginClass");
+                else if (pluginTypes.Length > 1)
+                    throw new InvalidOperationException(p.Path.Split('\\').Last() + " has more than 1 instance of PluginClass");
+
+                PluginClass pluginInstance = (PluginClass)Activator.CreateInstance(pluginTypes[0]);
+                pluginInstance.PluginDir = p.Path;
+                pluginInstance.Global = csGlobal;
+                pluginInstance.Init();
             }
         }
 

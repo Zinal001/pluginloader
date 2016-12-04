@@ -1,6 +1,6 @@
 ## Synopsis
 
-PluginLoader adds support for IronPython plugins to [**Interstellar Rift**](http://interstellarrift.com/) from **Split Polygon**.
+PluginLoader adds support for IronPython plugins and plain C# scripts to [**Interstellar Rift**](http://interstellarrift.com/) from **Split Polygon**.
 
 *Please note that PL uses MSIL injection to edit original Interstellar Rift binary code. It can break your game executables.*
 

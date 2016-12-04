@@ -47,7 +47,8 @@ namespace PluginLoader
             {
                 var definition = Path.Combine(dir, "plugin.json");
                 var init = Path.Combine(dir, "__init__.py");
-                if (File.Exists(definition) && File.Exists(init))
+                var csInit = Path.Combine(dir, "__init__.cs");
+                if (File.Exists(definition) && (File.Exists(init) || File.Exists(csInit)))
                 {
                     try
                     {
