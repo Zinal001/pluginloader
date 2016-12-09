@@ -24,6 +24,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace PluginLoader
 {
@@ -202,6 +203,7 @@ namespace PluginLoader
                     Console.ReadLine();
                 }
             }
+
         }
 
         public void Start()
@@ -290,7 +292,22 @@ namespace PluginLoader
             if (!System.IO.File.Exists(p.Path + "\\__init__.cs"))
                 throw new InvalidOperationException("Unable to find file __init__.cs");
 
-            CompilerResults results = csProvider.CompileAssemblyFromFile(csParams, p.Path + "\\__init__.cs");
+            CompilerParameters scriptParams = CopyParams(csParams);
+
+            if (p.Metadata.DllIncludes != null && p.Metadata.DllIncludes.Length > 0)
+            {
+                foreach(String dllInclude in p.Metadata.DllIncludes)
+                {
+                    String dllPath = ExpandPluginPathVars(dllInclude, p);
+                    if (!System.IO.File.Exists(dllPath))
+                        throw new System.IO.FileNotFoundException("Unable to find .dll file", dllPath);
+
+                    if (!scriptParams.ReferencedAssemblies.Contains(dllPath))
+                        scriptParams.ReferencedAssemblies.Add(dllPath);
+                }
+            }
+
+            CompilerResults results = csProvider.CompileAssemblyFromFile(scriptParams, p.Path + "\\__init__.cs");
             if (results.Errors.HasErrors)
             {
                 System.Text.StringBuilder sbErrors = new System.Text.StringBuilder();
@@ -327,6 +344,60 @@ namespace PluginLoader
             gameEditor = null;
             gameMenu = null;
             gameServer = null;
+        }
+
+        private static CompilerParameters CopyParams(CompilerParameters csParams)
+        {
+            CompilerParameters newParams = new CompilerParameters();
+            newParams.CompilerOptions = csParams.CompilerOptions;
+            newParams.CoreAssemblyFileName = csParams.CoreAssemblyFileName;
+
+            String[] strArr = new String[csParams.EmbeddedResources.Count];
+
+            csParams.EmbeddedResources.CopyTo(strArr, 0);
+            newParams.EmbeddedResources.AddRange(strArr);
+
+            newParams.GenerateExecutable = csParams.GenerateExecutable;
+            newParams.GenerateInMemory = csParams.GenerateInMemory;
+            newParams.IncludeDebugInformation = csParams.IncludeDebugInformation;
+
+            strArr = new String[csParams.LinkedResources.Count];
+            csParams.LinkedResources.CopyTo(strArr, 0);
+            newParams.LinkedResources.AddRange(strArr);
+
+            newParams.MainClass = csParams.MainClass;
+            newParams.OutputAssembly = csParams.OutputAssembly;
+
+            strArr = new String[csParams.ReferencedAssemblies.Count];
+            csParams.ReferencedAssemblies.CopyTo(strArr, 0);
+            newParams.ReferencedAssemblies.AddRange(strArr);
+
+            newParams.TempFiles = csParams.TempFiles;
+            newParams.TreatWarningsAsErrors = csParams.TreatWarningsAsErrors;
+            newParams.UserToken = csParams.UserToken;
+            newParams.WarningLevel = csParams.WarningLevel;
+            newParams.Win32Resource = csParams.Win32Resource;
+
+            return newParams;
+        }
+
+        private String ExpandPluginPathVars(String str, Package p)
+        {
+            Dictionary<String, String> Replaces = new Dictionary<string, string>() {
+                { "%gamedir%", PackageManager.GameDir },
+                { "%rootdir%", PackageManager.RootDir },
+                { "%plugindir%", p.Path  }
+            };
+
+            Regex reg = new Regex(@"%\S+%", RegexOptions.IgnoreCase);
+
+            foreach(Match m in reg.Matches(str))
+            {
+                if (Replaces.ContainsKey(m.Value.ToLower()))
+                    str = str.Replace(m.Value, Replaces[m.Value.ToLower()]);
+            }
+
+            return str;
         }
     }
 }

@@ -32,6 +32,7 @@ namespace PluginLoader
             return $"{Package.ToString()} is missing dependency {Dependency.ToString()}";
         }
     }
+
     [Serializable]
     public struct Dependency
     {
@@ -43,6 +44,7 @@ namespace PluginLoader
             return $"{UniqueName} v{Version}";
         }
     }
+
     [Serializable]
     public struct Metadata
     {
@@ -52,12 +54,14 @@ namespace PluginLoader
         public Version PluginLoader;
         public List<Dependency> Dependencies;
         public PackageType PackageType;
+        public String[] DllIncludes;
 
         public override string ToString()
         {
             return $"{UniqueName} v{Version} ({PackageType.ToString()})";
         }
     }
+
     [Serializable]
     public struct Package
     {
